@@ -1,6 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ZombiesService } from './zombies.service';
-import { Crud } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { Zombie } from './entities/zombie.entity';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
@@ -13,6 +13,9 @@ import { UpdateZombieDto } from './dto/update-zombie.dto';
     create: CreateZombieDto,
     update: UpdateZombieDto,
   },
+  query: {
+    alwaysPaginate: true,
+  },
   params: {
     id: {
       type: 'uuid',
@@ -22,6 +25,11 @@ import { UpdateZombieDto } from './dto/update-zombie.dto';
   },
 })
 @Controller('zombies')
-export class ZombiesController {
+export class ZombiesController implements CrudController<Zombie> {
   constructor(public service: ZombiesService) {}
+
+  @Get(':id/items')
+  public getZombieItems(@Param('id') id: string) {
+    return this.service.getZombieItems(id);
+  }
 }
