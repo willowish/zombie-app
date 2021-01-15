@@ -4,6 +4,7 @@ import { Crud, CrudController } from '@nestjsx/crud';
 import { Zombie } from './entities/zombie.entity';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
+import { ItemsValue } from './dto/itemsValue';
 
 @Crud({
   model: {
@@ -31,5 +32,10 @@ export class ZombiesController implements CrudController<Zombie> {
   @Get(':id/items')
   public getZombieItems(@Param('id') id: string) {
     return this.service.getZombieItems(id);
+  }
+
+  @Get(':id/items/value')
+  public getZombieItemsValue(@Param('id') id: string): Promise<ItemsValue> {
+    return this.service.getZombieItemsValue(id);
   }
 }
