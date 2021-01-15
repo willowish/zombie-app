@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
@@ -17,4 +18,7 @@ export class Zombie {
   @ManyToMany(() => Item)
   @JoinTable()
   items: Item[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
