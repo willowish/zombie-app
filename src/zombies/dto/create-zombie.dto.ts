@@ -1,10 +1,11 @@
 import { Item } from '../../items/entities/item.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { MaxLength } from 'class-validator';
 
 export class CreateZombieDto {
-  @ApiProperty()
   name: string;
 
-  @ApiProperty()
+  @MaxLength(5, {
+    each: true,
+  })
   items: Item[];
 }

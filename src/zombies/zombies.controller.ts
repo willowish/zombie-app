@@ -19,7 +19,6 @@ import { MaxNumberOfItemsValidatorPipe } from './pipes/maxNumberOfItemsValidator
 export class ZombiesController {
   constructor(private readonly zombiesService: ZombiesService) {}
 
-  @UsePipes(MaxNumberOfItemsValidatorPipe)
   @Post()
   create(@Body() createZombieDto: CreateZombieDto) {
     return this.zombiesService.create(createZombieDto);

@@ -6,6 +6,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 function setUpSwagger(app: NestFastifyApplication) {
   const options = new DocumentBuilder()
@@ -22,6 +23,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  app.useGlobalPipes(new ValidationPipe());
   setUpSwagger(app);
 
   await app.listen(3000);
