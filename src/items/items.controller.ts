@@ -1,27 +1,34 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Item } from './entities/item.entity';
-import { Crud } from '@nestjsx/crud';
 
-@Crud({
-  model: {
-    type: Item,
-  },
-  dto: {
-    create: CreateItemDto,
-    update: UpdateItemDto,
-  },
-  params: {
-    id: {
-      type: 'uuid',
-      primary: true,
-      field: 'id',
-    },
-  },
-})
 @Controller('items')
 export class ItemsController {
-  constructor(public service: ItemsService) {}
+  constructor(private readonly itemsService: ItemsService) {}
+
+  @Post()
+  create(@Body() createItemDto: CreateItemDto) {
+    return this.itemsService.create(createItemDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.itemsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.itemsService.findOne(+id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
+    return this.itemsService.update(+id, updateItemDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.itemsService.remove(+id);
+  }
 }

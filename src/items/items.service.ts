@@ -1,23 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Item } from './entities/item.entity';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { Injectable } from '@nestjs/common';
+import { CreateItemDto } from './dto/create-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Zombie } from '../zombies/entities/zombie.entity';
 import { Repository } from 'typeorm';
-import { ItemsPricesUpdater } from './services/itemsPricesUpdater';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { CreateZombieDto } from '../zombies/dto/create-zombie.dto';
+import { UpdateZombieDto } from '../zombies/dto/update-zombie.dto';
+import { Item } from './entities/item.entity';
 
 @Injectable()
-export class ItemsService extends TypeOrmCrudService<Item> {
-  constructor(
-    @InjectRepository(Item) repository: Repository<Item>,
-    private itemsPricesUpdater: ItemsPricesUpdater,
-  ) {
-    super(repository);
+export class ItemsService {
+  constructor(@InjectRepository(Item) private repository: Repository<Item>) {}
+
+  create(createZombieDto: CreateItemDto) {
+    return this.repository.save(createZombieDto);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'UTC' })
-  async updatePrices() {
-    const itemsWithPrices = await this.itemsPricesUpdater.getItemsWithPrices();
-    await this.repo.save(itemsWithPrices.items);
+  findAll() {
+    return this.repository.find();
+  }
+
+  findOne(id: number) {
+    return this.repository.findOne({ id });
+  }
+
+  update(id: number, updateItemDto: UpdateItemDto) {
+    return this.repository.save(updateItemDto);
+  }
+
+  remove(id: number) {
+    return this.repository.delete(id);
   }
 }

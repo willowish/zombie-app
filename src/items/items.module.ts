@@ -16,6 +16,5 @@ import { ScheduleModule } from '@nestjs/schedule';
   ],
   controllers: [ItemsController],
   providers: [ItemsService, ItemsPricesUpdater],
-  exports: [ItemsService, ItemsPricesUpdater],
 })
 export class ItemsModule {}
