@@ -6,7 +6,7 @@ import { Zombie } from './entities/zombie.entity';
 import { Repository } from 'typeorm';
 import { Item } from '../items/entities/item.entity';
 import { ItemsValue } from './dto/itemsValue';
-import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currency-exchange-rates.service';
+import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currencyExchangeRates.service';
 import { defaultsDeep, uniqBy } from 'lodash';
 
 @Injectable()
@@ -30,11 +30,12 @@ export class ZombiesService {
 
   async update(id: string, updateZombieDto: UpdateZombieDto) {
     const user = await this.repository.findOne(id, { relations: ['items'] });
-    const array = [...updateZombieDto.items, ...user.items];
-    // eslint-disable-next-line no-console
-    console.log(array);
+    const updatedItems = uniqBy(
+      [...updateZombieDto.items, ...user.items],
+      'id',
+    );
     const updatedUser = { ...user, ...updateZombieDto };
-    updatedUser.items = uniqBy(array, 'id');
+    updatedUser.items = updatedItems;
     return this.repository.save(updatedUser);
   }
 
@@ -51,10 +52,8 @@ export class ZombiesService {
   }
 
   async getNumberOfItems(id: string): Promise<number> {
-    return this.repository.count({
-      where: { id },
-      relations: ['items'],
-    });
+    const zombieItems = await this.getZombieItems(id);
+    return zombieItems.length;
   }
 
   async getZombieItemsValue(id: string): Promise<ItemsValue> {
@@ -66,10 +65,10 @@ export class ZombiesService {
         EUR: rates.find((r) => r.code === 'EUR').bid * i.price,
         USD: rates.find((r) => r.code === 'USD').bid * i.price,
       }))
-      .reduce((acc, item) => ({
-        PLN: acc.PLN + item.PLN,
-        EUR: acc.EUR + item.EUR,
-        USD: acc.USD + item.USD,
+      .reduce(({ EUR, PLN, USD }, item) => ({
+        PLN: PLN + item.PLN,
+        EUR: EUR + item.EUR,
+        USD: USD + item.USD,
       }));
   }
 }

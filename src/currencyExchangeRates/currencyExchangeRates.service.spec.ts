@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CurrencyExchangeRatesService } from './currency-exchange-rates.service';
+import { CurrencyExchangeRatesService } from './currencyExchangeRates.service';
 
 describe('CurrencyExchangeRatesService', () => {
   let service: CurrencyExchangeRatesService;
@@ -9,7 +9,9 @@ describe('CurrencyExchangeRatesService', () => {
       providers: [CurrencyExchangeRatesService],
     }).compile();
 
-    service = module.get<CurrencyExchangeRatesService>(CurrencyExchangeRatesService);
+    service = module.get<CurrencyExchangeRatesService>(
+      CurrencyExchangeRatesService,
+    );
   });
 
   it('should be defined', () => {

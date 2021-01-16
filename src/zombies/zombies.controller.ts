@@ -6,15 +6,20 @@ import {
   Put,
   Param,
   Delete,
+  UsePipes,
+  Patch,
 } from '@nestjs/common';
 import { ZombiesService } from './zombies.service';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
+import { ItemsValue } from './dto/itemsValue';
+import { MaxNumberOfItemsValidatorPipe } from './pipes/maxNumberOfItemsValidator.pipe';
 
 @Controller('zombies')
 export class ZombiesController {
   constructor(private readonly zombiesService: ZombiesService) {}
 
+  @UsePipes(MaxNumberOfItemsValidatorPipe)
   @Post()
   create(@Body() createZombieDto: CreateZombieDto) {
     return this.zombiesService.create(createZombieDto);
@@ -30,12 +35,8 @@ export class ZombiesController {
     return this.zombiesService.findOne(id);
   }
 
-  @Get(':id/items')
-  findOneItems(@Param('id') id: string) {
-    return this.zombiesService.getZombieItems(id);
-  }
-
-  @Put(':id')
+  @UsePipes(MaxNumberOfItemsValidatorPipe)
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateZombieDto: UpdateZombieDto) {
     return this.zombiesService.update(id, updateZombieDto);
   }
@@ -43,5 +44,15 @@ export class ZombiesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.zombiesService.remove(id);
+  }
+
+  @Get(':id/items')
+  findOneItems(@Param('id') id: string) {
+    return this.zombiesService.getZombieItems(id);
+  }
+
+  @Get(':id/items/value')
+  public getZombieItemsValue(@Param('id') id: string): Promise<ItemsValue> {
+    return this.zombiesService.getZombieItemsValue(id);
   }
 }

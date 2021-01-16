@@ -1,5 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
-import { CurrencyExchangeRatesService } from './currency-exchange-rates.service';
+import { CurrencyExchangeRatesService } from './currencyExchangeRates.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
