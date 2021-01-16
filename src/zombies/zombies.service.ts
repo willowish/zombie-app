@@ -43,8 +43,16 @@ export class ZombiesService {
     return this.repository.save(updatedUser);
   }
 
+  updateBulk(createZombieDtos: UpdateZombieDto[]) {
+    return createZombieDtos.map((z) => this.update(z.id, z));
+  }
+
   remove(id: string) {
     return this.repository.delete(id);
+  }
+
+  removeBulk(ids: string[]) {
+    ids.forEach(this.remove);
   }
 
   async getZombieItems(id: string): Promise<Item[]> {

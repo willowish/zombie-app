@@ -34,6 +34,23 @@ export class ZombiesController {
     return this.zombiesService.createBulk(createZombieDtos);
   }
 
+  @Patch('bulk')
+  updateBulk(
+    @Body(new ParseArrayPipe({ items: UpdateZombieDto }))
+    @Body()
+    createZombieDtos: UpdateZombieDto[],
+  ) {
+    return this.zombiesService.updateBulk(createZombieDtos);
+  }
+
+  @Delete('bulk')
+  deleteBulk(
+    @Body()
+    ids: string[],
+  ) {
+    return this.zombiesService.removeBulk(ids);
+  }
+
   @Get()
   findAll() {
     return this.zombiesService.findAll();

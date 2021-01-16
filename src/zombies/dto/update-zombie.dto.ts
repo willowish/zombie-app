@@ -5,6 +5,8 @@ import { Item } from '../../items/entities/item.entity';
 import { MaxLength } from 'class-validator';
 
 export class UpdateZombieDto extends PartialType(CreateZombieDto) {
+  id: string;
+
   @ApiProperty()
   name: string;
 
