@@ -8,6 +8,7 @@ import {
   Delete,
   UsePipes,
   Patch,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { ZombiesService } from './zombies.service';
 import { CreateZombieDto } from './dto/create-zombie.dto';
@@ -22,6 +23,15 @@ export class ZombiesController {
   @Post()
   create(@Body() createZombieDto: CreateZombieDto) {
     return this.zombiesService.create(createZombieDto);
+  }
+
+  @Post('bulk')
+  createBulk(
+    @Body(new ParseArrayPipe({ items: CreateZombieDto }))
+    @Body()
+    createZombieDtos: CreateZombieDto[],
+  ) {
+    return this.zombiesService.createBulk(createZombieDtos);
   }
 
   @Get()

@@ -20,6 +20,10 @@ export class ZombiesService {
     return this.repository.save(createZombieDto);
   }
 
+  createBulk(createZombieDto: CreateZombieDto[]) {
+    return this.repository.save(createZombieDto);
+  }
+
   findAll() {
     return this.repository.find();
   }
