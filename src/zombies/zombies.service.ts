@@ -1,27 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { CreateZombieDto } from './dto/create-zombie.dto';
+import { UpdateZombieDto } from './dto/update-zombie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Zombie } from './entities/zombie.entity';
 import { Repository } from 'typeorm';
 import { Item } from '../items/entities/item.entity';
-import { CurrencyExchangeRatesService } from '../currency-exchange-rates/currency-exchange-rates.service';
 import { ItemsValue } from './dto/itemsValue';
+import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currency-exchange-rates.service';
+import { defaultsDeep, uniqBy } from 'lodash';
 
 @Injectable()
-export class ZombiesService extends TypeOrmCrudService<Zombie> {
+export class ZombiesService {
   constructor(
-    @InjectRepository(Zombie) repo: Repository<Zombie>,
+    @InjectRepository(Zombie) private repository: Repository<Zombie>,
     private exchangeRate: CurrencyExchangeRatesService,
-  ) {
-    super(repo);
+  ) {}
+
+  create(createZombieDto: CreateZombieDto) {
+    return this.repository.save(createZombieDto);
+  }
+
+  findAll() {
+    return this.repository.find();
+  }
+
+  findOne(id: string) {
+    return this.repository.findOne({ id });
+  }
+
+  async update(id: string, updateZombieDto: UpdateZombieDto) {
+    const user = await this.repository.findOne(id, { relations: ['items'] });
+    const array = [...updateZombieDto.items, ...user.items];
+    // eslint-disable-next-line no-console
+    console.log(array);
+    const updatedUser = { ...user, ...updateZombieDto };
+    updatedUser.items = uniqBy(array, 'id');
+    return this.repository.save(updatedUser);
+  }
+
+  remove(id: string) {
+    return this.repository.delete(id);
   }
 
   async getZombieItems(id: string): Promise<Item[]> {
-    const zombie = await this.repo.findOne(id, {
+    const zombie = await this.repository.findOne(id, {
       where: { id },
       relations: ['items'],
     });
     return zombie.items;
+  }
+
+  async getNumberOfItems(id: string): Promise<number> {
+    return this.repository.count({
+      where: { id },
+      relations: ['items'],
+    });
   }
 
   async getZombieItemsValue(id: string): Promise<ItemsValue> {

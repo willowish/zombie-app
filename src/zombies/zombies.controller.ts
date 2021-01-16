@@ -1,41 +1,47 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ZombiesService } from './zombies.service';
-import { Crud, CrudController } from '@nestjsx/crud';
-import { Zombie } from './entities/zombie.entity';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
-import { ItemsValue } from './dto/itemsValue';
 
-@Crud({
-  model: {
-    type: Zombie,
-  },
-  dto: {
-    create: CreateZombieDto,
-    update: UpdateZombieDto,
-  },
-  query: {
-    alwaysPaginate: true,
-  },
-  params: {
-    id: {
-      type: 'uuid',
-      primary: true,
-      field: 'id',
-    },
-  },
-})
 @Controller('zombies')
-export class ZombiesController implements CrudController<Zombie> {
-  constructor(public service: ZombiesService) {}
+export class ZombiesController {
+  constructor(private readonly zombiesService: ZombiesService) {}
 
-  @Get(':id/items')
-  public getZombieItems(@Param('id') id: string) {
-    return this.service.getZombieItems(id);
+  @Post()
+  create(@Body() createZombieDto: CreateZombieDto) {
+    return this.zombiesService.create(createZombieDto);
   }
 
-  @Get(':id/items/value')
-  public getZombieItemsValue(@Param('id') id: string): Promise<ItemsValue> {
-    return this.service.getZombieItemsValue(id);
+  @Get()
+  findAll() {
+    return this.zombiesService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.zombiesService.findOne(id);
+  }
+
+  @Get(':id/items')
+  findOneItems(@Param('id') id: string) {
+    return this.zombiesService.getZombieItems(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateZombieDto: UpdateZombieDto) {
+    return this.zombiesService.update(id, updateZombieDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.zombiesService.remove(id);
   }
 }

@@ -15,7 +15,7 @@ export class Zombie {
   @Column()
   name: string;
 
-  @ManyToMany(() => Item)
+  @ManyToMany(() => Item, { cascade: ['insert', 'update'] })
   @JoinTable()
   items: Item[];
 
