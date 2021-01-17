@@ -16,7 +16,9 @@ export const databaseProvider = [
         autoLoadEntities: true,
         synchronize: true,
         extra: {
-          ssl: configService.get('DATABASE_SSL_ENABLED'),
+          ssl: {
+            rejectUnauthorized: false,
+          },
         },
       };
     },
