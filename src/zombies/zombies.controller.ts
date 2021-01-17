@@ -25,6 +25,7 @@ export class ZombiesController {
     return this.zombiesService.create(createZombieDto);
   }
 
+  //todo: walidacja nie dziala
   @Post('bulk')
   createBulk(
     @Body(new ParseArrayPipe({ items: CreateZombieDto }))
