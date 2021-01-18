@@ -1,6 +1,14 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+const getSslConfig = (sslEnabled: boolean) => {
+  if (sslEnabled) {
+    return {
+      rejectUnauthorized: false,
+    };
+  }
+};
+
 export const databaseProvider = [
   TypeOrmModule.forRootAsync({
     imports: [ConfigModule.forRoot()],
@@ -16,9 +24,7 @@ export const databaseProvider = [
         autoLoadEntities: true,
         synchronize: true,
         extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
+          ...getSslConfig(configService.get('DATABASE_SSL_ENABLED')),
         },
       };
     },

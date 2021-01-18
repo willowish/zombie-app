@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { Item } from '../items/entities/item.entity';
 import { ItemsValue } from './dto/itemsValue';
 import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currencyExchangeRates.service';
-import { defaultsDeep, uniqBy } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 
 @Injectable()
 export class ZombiesService {
@@ -33,13 +33,8 @@ export class ZombiesService {
   }
 
   async update(id: string, updateZombieDto: UpdateZombieDto) {
-    const user = await this.repository.findOne(id, { relations: ['items'] });
-    const updatedItems = uniqBy(
-      [...updateZombieDto.items, ...user.items],
-      'id',
-    );
-    const updatedUser = { ...user, ...updateZombieDto };
-    updatedUser.items = updatedItems;
+    const user = await this.findOne(id);
+    const updatedUser = this.getUpdatedUser(user, updateZombieDto);
     return this.repository.save(updatedUser);
   }
 
@@ -52,7 +47,7 @@ export class ZombiesService {
   }
 
   removeBulk(ids: string[]) {
-    ids.forEach(this.remove);
+    ids.forEach((id) => this.remove(id));
   }
 
   async getZombieItems(id: string): Promise<Item[]> {
@@ -60,7 +55,7 @@ export class ZombiesService {
       where: { id },
       relations: ['items'],
     });
-    return zombie.items;
+    return zombie?.items ?? [];
   }
 
   async getNumberOfItems(id: string): Promise<number> {
@@ -82,5 +77,22 @@ export class ZombiesService {
         EUR: EUR + item.EUR,
         USD: USD + item.USD,
       }));
+  }
+
+  private getUpdatedUser(user: Zombie, updateZombieDto: UpdateZombieDto) {
+    const updatedItems = this.mergeItemsWithNewOnes(updateZombieDto, user);
+    const updatedUser = { ...user, ...updateZombieDto };
+    updatedUser.items = updatedItems;
+    return updatedUser;
+  }
+
+  private mergeItemsWithNewOnes(
+    updateZombieDto: UpdateZombieDto,
+    user: Zombie,
+  ) {
+    return uniqBy(
+      [...(updateZombieDto?.items ?? []), ...(user?.items ?? [])],
+      'id',
+    );
   }
 }

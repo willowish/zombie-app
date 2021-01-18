@@ -1,7 +1,6 @@
 import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { map } from 'rxjs/operators';
-import { Item } from '../entities/item.entity';
 import { ZombieItemsDto } from '../dto/zombieItemsPrices.dto';
 
 @Injectable()

@@ -4,10 +4,10 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
-import { ZombiesService } from '../zombies.service';
+import { ZombiesService } from '../../zombies.service';
 
 @Injectable()
-export class MaxNumberOfItemsValidatorPipe implements PipeTransform {
+export class MaxNumberOfItemsValidator implements PipeTransform {
   private readonly MAX_NUMBER_OF_ITEMS = 5;
   constructor(private zombieService: ZombiesService) {}
 

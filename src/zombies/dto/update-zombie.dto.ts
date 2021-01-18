@@ -10,9 +10,9 @@ export class UpdateZombieDto extends PartialType(CreateZombieDto) {
   @ApiProperty()
   name: string;
 
+  @ApiProperty()
   @MaxLength(5, {
     each: true,
   })
-  @ApiProperty()
   items: Item[];
 }
