@@ -1,13 +1,9 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { filter, map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { CurrencyExchangeRate } from './model/CurrencyExchangeRate';
-
-type Response = {
-  table: string;
-  no: string;
-  rates: CurrencyExchangeRate[];
-};
+import { ExchangeRatesResponse } from './model/exchangeRatesResponse';
+import { ExchangeRatesException } from './exceptions/exchangeRatesException';
 
 @Injectable()
 export class CurrencyExchangeRatesService {
@@ -18,17 +14,23 @@ export class CurrencyExchangeRatesService {
     private config: ConfigService,
   ) {}
 
-  getDailyExchangeRates() {
+  getDailyExchangeRates(): Promise<CurrencyExchangeRate[]> {
     return this.httpService
-      .get<Response[]>(this.config.get('EXCHANGE_RATES_URL'))
+      .get<ExchangeRatesResponse[]>(this.config.get('EXCHANGE_RATES_URL'))
       .pipe(
-        map((response) =>
-          Object.values(response.data[0].rates).filter(
+        catchError((e) => {
+          throw new ExchangeRatesException(
+            e.response?.data,
+            e.response?.status,
+          );
+        }),
+        map((response) => {
+          return Object.values(response.data[0].rates).filter(
             (rate: CurrencyExchangeRate) => {
               return this.SUPPORTED_CURRENCIES.includes(rate.code);
             },
-          ),
-        ),
+          );
+        }),
       )
       .toPromise();
   }
