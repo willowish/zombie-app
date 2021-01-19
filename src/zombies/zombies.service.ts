@@ -7,7 +7,8 @@ import { Repository } from 'typeorm';
 import { Item } from '../items/entities/item.entity';
 import { ItemsValue } from './dto/itemsValue';
 import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currencyExchangeRates.service';
-import { isEmpty, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
+import { extractItemsSumValue } from './services/extractItemsSumValue';
 
 @Injectable()
 export class ZombiesService {
@@ -33,9 +34,9 @@ export class ZombiesService {
   }
 
   async update(id: string, updateZombieDto: UpdateZombieDto) {
-    const user = await this.findOne(id);
-    const updatedUser = this.getUpdatedUser(user, updateZombieDto);
-    return this.repository.save(updatedUser);
+    const zombie = await this.findOne(id);
+    const updatedZombie = this.getUpdatedZombie(zombie, updateZombieDto);
+    return this.repository.save(updatedZombie);
   }
 
   updateBulk(createZombieDtos: UpdateZombieDto[]) {
@@ -55,7 +56,7 @@ export class ZombiesService {
       where: { id },
       relations: ['items'],
     });
-    return zombie?.items ?? [];
+    return zombie.items ?? [];
   }
 
   async getNumberOfItems(id: string): Promise<number> {
@@ -66,32 +67,22 @@ export class ZombiesService {
   async getZombieItemsValue(id: string): Promise<ItemsValue> {
     const rates = await this.exchangeRate.getDailyExchangeRates();
     const zombieItems = await this.getZombieItems(id);
-    return zombieItems
-      .map((i) => ({
-        PLN: i.price,
-        EUR: rates.find((r) => r.code === 'EUR').bid * i.price,
-        USD: rates.find((r) => r.code === 'USD').bid * i.price,
-      }))
-      .reduce(({ EUR, PLN, USD }, item) => ({
-        PLN: PLN + item.PLN,
-        EUR: EUR + item.EUR,
-        USD: USD + item.USD,
-      }));
+    return extractItemsSumValue(zombieItems, rates);
   }
 
-  private getUpdatedUser(user: Zombie, updateZombieDto: UpdateZombieDto) {
-    const updatedItems = this.mergeItemsWithNewOnes(updateZombieDto, user);
-    const updatedUser = { ...user, ...updateZombieDto };
-    updatedUser.items = updatedItems;
-    return updatedUser;
+  private getUpdatedZombie(zombie: Zombie, updateZombieDto: UpdateZombieDto) {
+    const updatedItems = this.mergeItemsWithNewOnes(updateZombieDto, zombie);
+    const updatedZombie = { ...zombie, ...updateZombieDto };
+    updatedZombie.items = updatedItems;
+    return updatedZombie;
   }
 
   private mergeItemsWithNewOnes(
     updateZombieDto: UpdateZombieDto,
-    user: Zombie,
+    zombie: Zombie,
   ) {
     return uniqBy(
-      [...(updateZombieDto?.items ?? []), ...(user?.items ?? [])],
+      [...(updateZombieDto?.items ?? []), ...(zombie?.items ?? [])],
       'id',
     );
   }

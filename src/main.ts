@@ -23,6 +23,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  app.useLogger(console);
   app.useGlobalPipes(new ValidationPipe());
   setUpSwagger(app);
 
