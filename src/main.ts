@@ -8,7 +8,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
-function setUpSwagger(app: NestFastifyApplication) {
+const setUpSwagger = (app: NestFastifyApplication) => {
   const options = new DocumentBuilder()
     .setTitle('Zombie API')
     .setDescription('Zombie API')
@@ -17,7 +17,7 @@ function setUpSwagger(app: NestFastifyApplication) {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-}
+};
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,

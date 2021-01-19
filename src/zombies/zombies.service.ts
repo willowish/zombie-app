@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,7 +34,9 @@ export class ZombiesService {
   }
 
   async update(id: string, updateZombieDto: UpdateZombieDto) {
-    const zombie = await this.findOne(id);
+    const zombie = await this.repository.findOne(id, {
+      relations: ['items'],
+    });
     const updatedZombie = this.getUpdatedZombie(zombie, updateZombieDto);
     return this.repository.save(updatedZombie);
   }
@@ -51,9 +53,16 @@ export class ZombiesService {
     ids.forEach((id) => this.remove(id));
   }
 
+  removeItemFromZombie(zombieId: string, itemId: number) {
+    return this.repository
+      .createQueryBuilder()
+      .relation(Zombie, 'items')
+      .of(zombieId)
+      .remove(itemId);
+  }
+
   async getZombieItems(id: string): Promise<Item[]> {
     const zombie = await this.repository.findOne(id, {
-      where: { id },
       relations: ['items'],
     });
     return zombie.items ?? [];
@@ -68,6 +77,14 @@ export class ZombiesService {
     const rates = await this.exchangeRate.getDailyExchangeRates();
     const zombieItems = await this.getZombieItems(id);
     return extractItemsSumValue(zombieItems, rates);
+  }
+
+  addItemsToZombie(id: string, itemsIds: number[]) {
+    return this.repository
+      .createQueryBuilder()
+      .relation(Zombie, 'items')
+      .of(id)
+      .add(itemsIds);
   }
 
   private getUpdatedZombie(zombie: Zombie, updateZombieDto: UpdateZombieDto) {

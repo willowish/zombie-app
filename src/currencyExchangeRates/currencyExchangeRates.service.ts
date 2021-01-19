@@ -1,7 +1,7 @@
-import { HttpException, HttpService, Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, map } from 'rxjs/operators';
-import { CurrencyExchangeRate } from './model/CurrencyExchangeRate';
+import { CurrencyExchangeRate } from './model/currencyExchangeRate';
 import { ExchangeRatesResponse } from './model/exchangeRatesResponse';
 import { ExchangeRatesException } from './exceptions/exchangeRatesException';
 
@@ -24,13 +24,13 @@ export class CurrencyExchangeRatesService {
             e.response?.status,
           );
         }),
-        map((response) => {
-          return Object.values(response.data[0].rates).filter(
+        map((response) =>
+          Object.values(response.data[0].rates).filter(
             (rate: CurrencyExchangeRate) => {
               return this.SUPPORTED_CURRENCIES.includes(rate.code);
             },
-          );
-        }),
+          ),
+        ),
       )
       .toPromise();
   }

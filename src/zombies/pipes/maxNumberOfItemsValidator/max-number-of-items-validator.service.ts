@@ -12,6 +12,7 @@ export class MaxNumberOfItemsValidator implements PipeTransform {
   constructor(private zombieService: ZombiesService) {}
 
   async transform(value: any, metadata: ArgumentMetadata) {
+    console.log(value);
     if (typeof value !== 'string') {
       return value;
     }

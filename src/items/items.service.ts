@@ -14,6 +14,10 @@ export class ItemsService {
     private itemsPricesUpdater: ItemsPricesUpdaterService,
   ) {}
 
+  findOne(id: number): Promise<Item> {
+    return this.repository.findOne(id);
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'UTC' })
   async updatePrices() {
     try {

@@ -9,6 +9,7 @@ import {
 } from '@nestjs/platform-fastify';
 
 import * as request from 'supertest';
+import { ItemsService } from '../items/items.service';
 
 describe('ZombiesController', () => {
   let controller: ZombiesController;
@@ -33,6 +34,12 @@ describe('ZombiesController', () => {
             getZombieItems: jest.fn(),
             getNumberOfItems: jest.fn(),
             getZombieItemsValue: jest.fn(),
+          },
+        },
+        {
+          provide: ItemsService,
+          useValue: {
+            findOne: jest.fn(),
           },
         },
       ],

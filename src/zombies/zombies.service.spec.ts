@@ -7,7 +7,7 @@ import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currencyE
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { Repository } from 'typeorm';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
-import { CurrencyExchangeRate } from '../currencyExchangeRates/model/CurrencyExchangeRate';
+import { CurrencyExchangeRate } from '../currencyExchangeRates/model/currencyExchangeRate';
 
 const getExchangeRate = (
   currency: string,

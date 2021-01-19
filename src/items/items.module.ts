@@ -14,5 +14,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     TypeOrmModule.forFeature([Item]),
   ],
   providers: [ItemsService, ItemsPricesUpdaterService],
+  exports: [ItemsService],
 })
 export class ItemsModule {}

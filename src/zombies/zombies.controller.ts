@@ -1,15 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Put,
-  Param,
+  Controller,
   Delete,
-  UsePipes,
-  Patch,
+  Get,
+  Param,
   ParseArrayPipe,
+  ParseIntPipe,
   ParseUUIDPipe,
+  Patch,
+  Post,
+  UsePipes,
 } from '@nestjs/common';
 import { ZombiesService } from './zombies.service';
 import { CreateZombieDto } from './dto/create-zombie.dto';
@@ -18,6 +18,7 @@ import { ItemsValue } from './dto/itemsValue';
 import { MaxNumberOfItemsValidator } from './pipes/maxNumberOfItemsValidator/max-number-of-items-validator.service';
 import { ZombieExistsValidator } from './pipes/zombieExistsValidator/zombieExistsValidator';
 import { NonEmptyValidator } from './pipes/notEmptyValidator/nonEmptyValidator.pipe';
+import { ItemExistsValidator } from '../items/pipes/validators/itemExistsValidator';
 
 @Controller('zombies')
 export class ZombiesController {
@@ -79,6 +80,22 @@ export class ZombiesController {
   @Get(':id/items')
   findOneItems(@Param('id') id: string) {
     return this.zombiesService.getZombieItems(id);
+  }
+
+  @Post(':zombieId/items')
+  addItemsToZombie(
+    @Param('zombieId', ParseUUIDPipe, ZombieExistsValidator) zombieId: string,
+    @Body(new ParseArrayPipe({ items: ItemExistsValidator })) items: number[],
+  ) {
+    return this.zombiesService.addItemsToZombie(zombieId, items);
+  }
+
+  @Delete(':zombieId/items/:itemId')
+  deleteItemFromZombie(
+    @Param('zombieId', ParseUUIDPipe, ZombieExistsValidator) zombieId: string,
+    @Param('itemId', ItemExistsValidator, ParseIntPipe) itemId: number,
+  ) {
+    return this.zombiesService.removeItemFromZombie(zombieId, itemId);
   }
 
   @UsePipes(ZombieExistsValidator)
