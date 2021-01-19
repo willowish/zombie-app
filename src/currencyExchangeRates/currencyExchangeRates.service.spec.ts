@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrencyExchangeRatesService } from './currencyExchangeRates.service';
-import { HttpException, HttpModule, HttpService } from '@nestjs/common';
+import { HttpModule, HttpService } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getMockedHttpResponse } from '../utils/testUtils/getMockedHttpResponse';
-import { ExchangeRatesException } from './exceptions/exchangeRatesException';
 import { throwError } from 'rxjs';
 
 describe('CurrencyExchangeRatesService', () => {
