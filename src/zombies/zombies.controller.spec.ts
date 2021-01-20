@@ -115,9 +115,8 @@ describe('ZombiesController', () => {
     // then
     await request(app.getHttpServer())
       .post('/zombies/bulk')
-      .send(zombie)
+      .send({ zombies: [zombie] })
       .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
       .expect(HttpStatus.BAD_REQUEST);
   });
 
@@ -129,7 +128,6 @@ describe('ZombiesController', () => {
       .post('/zombies/bulk')
       .send({})
       .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
       .expect(HttpStatus.BAD_REQUEST);
   });
   it("should return NOT FOUND when trying to update zombie that doesn't exists", async () => {

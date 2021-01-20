@@ -14,12 +14,17 @@ import {
 import { ZombiesService } from './zombies.service';
 import { CreateZombieDto } from './dto/create-zombie.dto';
 import { UpdateZombieDto } from './dto/update-zombie.dto';
-import { ItemsValue } from './dto/itemsValue';
 import { MaxNumberOfItemsValidator } from './pipes/maxNumberOfItemsValidator/max-number-of-items-validator.service';
 import { ZombieExistsValidator } from './pipes/zombieExistsValidator/zombieExistsValidator';
 import { NonEmptyValidator } from './pipes/notEmptyValidator/nonEmptyValidator.pipe';
 import { ItemExistsValidator } from '../items/pipes/validators/itemExistsValidator';
+import { ItemsIdsListDTO } from './dto/itemsIdsList.dto';
+import { ItemsValue } from './dto/itemsValue.dto';
+import { CreateZombieBulkDto } from './dto/createZombieBulk.dto';
+import { UpdateZombieBulkDto } from './dto/updateZombieBulk.dto';
+import { ApiConsumes, ApiOperation } from '@nestjs/swagger';
 
+@UsePipes(NonEmptyValidator)
 @Controller('zombies')
 export class ZombiesController {
   constructor(private readonly zombiesService: ZombiesService) {}
@@ -30,19 +35,16 @@ export class ZombiesController {
   }
 
   @Post('bulk')
-  createBulk(
-    @Body(new ParseArrayPipe({ items: CreateZombieDto }))
-    createZombieDtos: CreateZombieDto[],
-  ) {
-    return this.zombiesService.createBulk(createZombieDtos);
+  createBulk(@Body() createZombieDtos: CreateZombieBulkDto) {
+    return this.zombiesService.createBulk(createZombieDtos.zombies);
   }
 
   @Patch('bulk')
   updateBulk(
-    @Body(new ParseArrayPipe({ items: UpdateZombieDto }))
-    createZombieDtos: UpdateZombieDto[],
+    @Body()
+    updateZombieDto: UpdateZombieBulkDto,
   ) {
-    return this.zombiesService.updateBulk(createZombieDtos);
+    return this.zombiesService.updateBulk(updateZombieDto.zombies);
   }
 
   @Delete('bulk')
@@ -85,9 +87,9 @@ export class ZombiesController {
   @Post(':zombieId/items')
   addItemsToZombie(
     @Param('zombieId', ParseUUIDPipe, ZombieExistsValidator) zombieId: string,
-    @Body(new ParseArrayPipe({ items: ItemExistsValidator })) items: number[],
+    @Body() items: ItemsIdsListDTO,
   ) {
-    return this.zombiesService.addItemsToZombie(zombieId, items);
+    return this.zombiesService.addItemsToZombie(zombieId, items.items);
   }
 
   @Delete(':zombieId/items/:itemId')

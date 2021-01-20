@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Zombie } from './entities/zombie.entity';
 import { Repository } from 'typeorm';
 import { Item } from '../items/entities/item.entity';
-import { ItemsValue } from './dto/itemsValue';
+import { ItemsValue } from './dto/itemsValue.dto';
 import { CurrencyExchangeRatesService } from '../currencyExchangeRates/currencyExchangeRates.service';
 import { uniqBy } from 'lodash';
 import { extractItemsSumValue } from './services/extractItemsSumValue';
